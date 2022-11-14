@@ -1,7 +1,10 @@
 package com.carara.payroll.resource;
 
 import com.carara.payroll.entity.Employee;
+import com.carara.payroll.entity.Order;
+import com.carara.payroll.entity.Status;
 import com.carara.payroll.repository.EmployeeRepository;
+import com.carara.payroll.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -14,12 +17,22 @@ public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     @Bean
-    CommandLineRunner initDatabase(EmployeeRepository repository) {
+    CommandLineRunner initDatabase(EmployeeRepository employeeRepository, OrderRepository orderRepository) {
 
         return args -> {
-            log.info("Preloading " + repository.save(new Employee("Bilbo", "Baggins", "burglar")));
-            log.info("Preloading " + repository.save(new Employee("Frodo", "Baggins", "thief")));
-            log.info("Preloading " + repository.save(new Employee("Pedro", "Carara", "developer")));
+            employeeRepository.save(new Employee("Bilbo", "Baggins", "burglar"));
+            employeeRepository.save(new Employee("Frodo", "Baggins", "thief"));
+
+            employeeRepository.findAll().forEach(employee -> log.info("Preloaded " + employee));
+
+
+            orderRepository.save(new Order("MacBook Pro", Status.COMPLETED));
+            orderRepository.save(new Order("iPhone", Status.IN_PROGRESS));
+
+            orderRepository.findAll().forEach(order -> {
+                log.info("Preloaded " + order);
+            });
+
         };
     }
 }
